@@ -70,30 +70,27 @@ def classify():
     input_shape=(300, 300, 3)
     model = SSD300(input_shape, num_classes=NUM_CLASSES)
     #model.load_weights('weights_SSD300.hdf5', by_name=True)
-    weights_file = "./checkpoints/weights.00-1.65.hdf5"
+    weights_file = "./checkpoints/weights.00-1.25.hdf5"
     model.load_weights(weights_file, by_name=True)
 
     bbox_util = BBoxUtility(NUM_CLASSES)
 
-    #target_dir = "/Users/donchan/Documents/myData/miyuki/camera/prescription"
-    target_dir = "/Volumes/m1124/FTP/073010"
-    
+    target_dir = "/Users/donchan/Documents/myData/miyuki/camera/None"
+    #target_dir = "/Volumes/m1124/FTP/073010"
+    #target_dir = "./pics"    
     # load original image
-    test_image_file = os.path.join(target_dir,"*.jpg")
     #files = glob.glob("/Volumes/m1124/FTP/073010/*.jpg")
 
     files = os.listdir(target_dir)
+    np.random.shuffle(files)
     files = [ os.path.join( target_dir, f  ) for f in files if ".jpg" in f  ]
-
-
+    files = files[:10]
 
     logging.info("- "* 40)
-    logging.info(test_image_file)
-    #logging.info(files)
+    logging.info(files)
     logging.info("- "* 40)    
     # build pipeline images for classification (original image size)
     pipeline_images = [ mpimg.imread(file) for file in files ]
-
 
     # load image for prediction (shrinked 300 x 300)
     image_load_ops = lambda x:image.load_img(x , target_size=(300, 300))
@@ -118,6 +115,7 @@ def classify():
     for i, img in enumerate(pipeline_images):
         # Parse the outputs.
         to_draw = img.copy()
+
         det_label = results[i][:, 0]
         det_conf = results[i][:, 1]
         det_xmin = results[i][:, 2]
@@ -126,7 +124,7 @@ def classify():
         det_ymax = results[i][:, 5]
 
         # Get detections with confidence higher than 0.6.
-        top_indices = [i for i, conf in enumerate(det_conf) if conf >= 0.6]
+        top_indices = [i for i, conf in enumerate(det_conf) if conf >= 0.5]
 
         top_conf = det_conf[top_indices]
         top_label_indices = det_label[top_indices].tolist()
@@ -166,7 +164,7 @@ def classify():
         if prescription_label_name == 1:
             cv2.imwrite(  os.path.join( "./results", str(i)+'.jpg' )    , to_draw )
         
-        #plt.show()    
+        plt.show()    
 
 
 def main():

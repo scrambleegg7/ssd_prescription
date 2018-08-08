@@ -1,6 +1,13 @@
 import numpy as np
 import os
 from xml.etree import ElementTree
+import pandas as pd   
+
+import logging, sys
+
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
+                    level=logging.INFO,
+                    stream=sys.stdout)
 
 class XML_preprocessor(object):
 
@@ -8,11 +15,46 @@ class XML_preprocessor(object):
         self.path_prefix = data_path
         self.num_classes = 20
         self.data = dict()
+
+        # open object checker file
+
+        boat_file = '../VOCdevkit/VOC2007/ImageSets/Main/boat_trainval.txt'
+        bus_file = '../VOCdevkit/VOC2007/ImageSets/Main/bus_trainval.txt'
+        
+        self.df_boat = pd.read_csv(boat_file, header=None, sep="\s+", names=["filename", "flag"], dtype={'filename':'object'} )
+        self.df = self.df_boat[self.df_boat.flag == 1].copy()
+        self.df_bus = pd.read_csv(bus_file, header=None, sep="\s+", names=["filename", "flag"], dtype={'filename':'object'} )
+        self.df_bus = self.df_bus[self.df_bus.flag == 1].copy()
+        
+        self.df = self.df.append( self.df_bus )
+        
+        logging.info( self.df.shape)
+
         self._preprocess_XML()
 
+
+    def checkBoat(self, filename):
+
+        filename = filename.split('.')[0]
+        #print(filename)
+        
+        if filename in self.df["filename"].tolist():
+            return True
+        else:
+            return False
+
+
     def _preprocess_XML(self):
+
+
         filenames = os.listdir(self.path_prefix)
         for filename in filenames:
+
+            #if not self.checkBoat(filename):
+            #    if not "image18" in filename:
+            #        continue
+            #logging.info("boat file: %s" %    filename)
+
             tree = ElementTree.parse(self.path_prefix + filename)
             root = tree.getroot()
             bounding_boxes = []
@@ -31,7 +73,9 @@ class XML_preprocessor(object):
                 class_name = object_tree.find('name').text
                 one_hot_class = self._to_one_hot(class_name)
                 one_hot_classes.append(one_hot_class)
-            image_name = root.find('filename').text + ".jpg"
+            image_name = root.find('filename').text
+            if "image18" in filename:
+                image_name += ".jpg"
             bounding_boxes = np.asarray(bounding_boxes)
             one_hot_classes = np.asarray(one_hot_classes)
             image_data = np.hstack((bounding_boxes, one_hot_classes))
@@ -41,13 +85,13 @@ class XML_preprocessor(object):
         one_hot_vector = [0] * self.num_classes
         if name == 'Prescription':
             one_hot_vector[0] = 1
-        elif name == 'None':
+        elif name == 'Bill':
             one_hot_vector[1] = 1
-        elif name == 'bird':
+        elif name == 'Note':
             one_hot_vector[2] = 1
-        elif name == 'boat':
+        elif name == 'Documents':
             one_hot_vector[3] = 1
-        elif name == 'bottle':
+        elif name == 'item':
             one_hot_vector[4] = 1
         elif name == 'bus':
             one_hot_vector[5] = 1
@@ -79,6 +123,8 @@ class XML_preprocessor(object):
             one_hot_vector[18] = 1
         elif name == 'tvmonitor':
             one_hot_vector[19] = 1
+        elif name == 'aeroplane':
+            pass
         else:
             print('unknown label: %s' %name)
 
@@ -86,6 +132,8 @@ class XML_preprocessor(object):
 
 ## example on how to use it
 import pickle
-data = XML_preprocessor('../VOCdevkit/myVOC/Annotations/').data
-pickle.dump(data,open('myVOC.pkl','wb'))
+data = XML_preprocessor('../VOCdevkit/080109_output/Annotations/').data
+#data = XML_preprocessor('../VOCdevkit/VOC2007/Annotations/').data
+pickle.dump(data,open('080109_output.pkl','wb'))
+
 

@@ -99,7 +99,7 @@ def train_proc(dirName="VOC2007"):
     model.compile(optimizer=optim,
                 loss=MultiboxLoss(NUM_CLASSES, neg_pos_ratio=2.0).compute_loss)
 
-    nb_epoch = 1
+    nb_epoch = 3
     # keras 1
     #history = model.fit_generator(gen.generate(True), gen.train_batches,
     #                            nb_epoch, verbose=1,

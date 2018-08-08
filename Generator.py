@@ -163,10 +163,10 @@ class Generator(object):
                         img = jitter(img)
                     if self.lighting_std:
                         img = self.lighting(img)
-                    if self.hflip_prob > 0:
-                        img, y = self.horizontal_flip(img, y)
-                    if self.vflip_prob > 0:
-                        img, y = self.vertical_flip(img, y)
+                    #if self.hflip_prob > 0:
+                    #    img, y = self.horizontal_flip(img, y)
+                    #if self.vflip_prob > 0:
+                    #    img, y = self.vertical_flip(img, y)
                 # 訓練データ生成時にbbox_utilを使っているのはここだけらしい
                 #print(y)
                 y = self.bbox_util.assign_boxes(y)
