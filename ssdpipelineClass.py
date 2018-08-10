@@ -46,7 +46,7 @@ class SSDPipeline(object):
 
         input_shape=(300, 300, 3)
         self.model = SSD300(input_shape, num_classes=NUM_CLASSES)
-        weights_file = "./checkpoints/weights.00-1.25.hdf5"        
+        weights_file = "./checkpoints/weights.09-1.09.hdf5"        
         self.model.load_weights(weights_file, by_name=True)
         self.bbox_util = BBoxUtility(NUM_CLASSES)
 
@@ -85,7 +85,7 @@ class SSDPipeline(object):
 
         # this is manual adjustment parameter
         # For binary classifilcation, set higher threshhold rather than 0.5
-        conf_thresh = 0.90
+        conf_thresh = 0.50
 
         accum_time = 0
         curr_fps = 0

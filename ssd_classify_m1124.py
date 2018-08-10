@@ -18,7 +18,7 @@ def videopipeline():
     # AXIS M1124 Video streaming
 
     cam = cv2.VideoCapture()
-    cam.open("http://192.168.1.151/axis-cgi/mjpg/video.cgi?fps=1")
+    cam.open("http://192.168.1.151/axis-cgi/mjpg/video.cgi?fps=4")
 
     if cam.isOpened():
         print("Camera connection established.")
@@ -34,16 +34,26 @@ def videopipeline():
 
     parentDir = "./results"
 
-    prv_frame = np.zeros( (720,1280,3) )
+    prv_frame = None
     while(True):
 
         ret, frame = cam.read()
 
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+
+        if prv_frame is None:
+            prv_frame = gray
+            continue
+
+        frameDelta = cv2.absdiff(prv_frame, gray)
+        # if frameDelta = difference less than 30, black,
+        # frameDelta bigger than 30, then white
+        thresh = cv2.threshold(frameDelta, 30, 255, cv2.THRESH_BINARY)[1]
+        
         new_frame, classes, probs = ssdp.pipeline(frame)
 
         if len(classes) > 0:
-            logging.info("Name %s" % (classes,) )
-            logging.info("Probability %s" % (probs,)   )
 
             if "Prescription" in classes:
                 timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -55,17 +65,19 @@ def videopipeline():
                 except FileExistsError as e:
                     pass
 
-
-                print(  prv_frame.ravel().sum() )
-                print(  frame.ravel().sum()  )
-
-                if prv_frame.ravel().sum() != frame.ravel().sum() : 
-
+                _num = cv2.countNonZero(thresh)
+                if _num > 10000:
+                    logging.info("frame diffs happened bigger than threshhold --> %d" % _num )
+                    logging.info("Name %s" % (classes,) )
+                    logging.info("Probability %s" % (probs,)   )
                     cv2.imwrite(  os.path.join( subdir, 'prescription-%s.jpg' % timestr )    , frame )
                 
-        prv_frame = frame
+        prv_frame = gray
 
-        imshow("Source video", new_frame)  
+        #imshow("frameDelta", frameDelta)
+        #imshow("thresh", thresh)
+        imshow("marked", new_frame)
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break     
 
