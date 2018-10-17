@@ -8,6 +8,9 @@ import logging, sys, os
 
 from ssdpipelineClass import SSDPipeline
 
+from sys import platform
+ 
+
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.INFO,
                     stream=sys.stdout)
@@ -32,7 +35,11 @@ def videopipeline():
     ssdp = SSDPipeline()
     ssdp.setClassColors()
 
-    parentDir = "/Volumes/ssd/FTP/"
+    if platform == "darwin":
+        parentDir = "/Volumes/ssd/FTP/"
+    elif platform == "win32":
+        parentDir = "p:/FTP"
+
 
     prv_frame = None
     while(True):
