@@ -178,7 +178,7 @@ def SSD300(input_shape, num_classes=21):
     net['conv4_3_norm'] = Normalize(20, name='conv4_3_norm')(net['conv4_3'])
     num_priors = 3
 
-    x = Conv2D(12, (3, 3), name="conv4_3_norm_mbox_loc", padding="same")(net['conv4_3_norm'])
+    x = Conv2D(num_priors * 4 , (3, 3), name="conv4_3_norm_mbox_loc", padding="same")(net['conv4_3_norm'])
     #x = Convolution2D(num_priors * 4, 3, 3, border_mode='same',
     #                  name='conv4_3_norm_mbox_loc')(net['conv4_3_norm'])
     net['conv4_3_norm_mbox_loc'] = x
@@ -188,7 +188,7 @@ def SSD300(input_shape, num_classes=21):
     if num_classes != 21:
         name += '_{}'.format(num_classes)
     
-    x = Conv2D(63, (3, 3), padding="same", name="conv4_3_norm_mbox_conf")(net['conv4_3_norm'])
+    x = Conv2D(num_priors * num_classes, (3, 3), padding="same", name="conv4_3_norm_mbox_conf")(net['conv4_3_norm'])
 
     #x = Convolution2D(num_priors * num_classes, 3, 3, border_mode='same',
     #                  name=name)(net['conv4_3_norm'])
@@ -201,7 +201,7 @@ def SSD300(input_shape, num_classes=21):
     net['conv4_3_norm_mbox_priorbox'] = priorbox(net['conv4_3_norm'])
     # Prediction from fc7
     num_priors = 6
-    net['fc7_mbox_loc'] = Conv2D(24, (3, 3), padding="same", name="fc7_mbox_loc")(net['fc7'])
+    net['fc7_mbox_loc'] = Conv2D(num_priors * 4, (3, 3), padding="same", name="fc7_mbox_loc")(net['fc7'])
 
     #net['fc7_mbox_loc'] = Convolution2D(num_priors * 4, 3, 3,
     #                                    border_mode='same',
@@ -212,7 +212,7 @@ def SSD300(input_shape, num_classes=21):
     if num_classes != 21:
         name += '_{}'.format(num_classes)
     
-    net['fc7_mbox_conf'] = Conv2D(126, (3, 3), padding="same", name="fc7_mbox_conf")(net['fc7'])
+    net['fc7_mbox_conf'] = Conv2D(num_priors * num_classes, (3, 3), padding="same", name="fc7_mbox_conf")(net['fc7'])
     #net['fc7_mbox_conf'] = Convolution2D(num_priors * num_classes, 3, 3,
     #                                     border_mode='same',
     #                                     name=name)(net['fc7'])
@@ -222,9 +222,10 @@ def SSD300(input_shape, num_classes=21):
                         variances=[0.1, 0.1, 0.2, 0.2],
                         name='fc7_mbox_priorbox')
     net['fc7_mbox_priorbox'] = priorbox(net['fc7'])
+    
     # Prediction from conv6_2
     num_priors = 6
-    x = Conv2D(24, (3, 3), padding="same", name="conv6_2_mbox_loc")(net['conv6_2'])
+    x = Conv2D(num_priors * 4, (3, 3), padding="same", name="conv6_2_mbox_loc")(net['conv6_2'])
     #x = Convolution2D(num_priors * 4, 3, 3, border_mode='same',
     #                  name='conv6_2_mbox_loc')(net['conv6_2'])
     net['conv6_2_mbox_loc'] = x
@@ -234,7 +235,7 @@ def SSD300(input_shape, num_classes=21):
     if num_classes != 21:
         name += '_{}'.format(num_classes)
     
-    x = Conv2D(126, (3, 3), padding="same", name="conv6_2_mbox_conf")(net['conv6_2'])
+    x = Conv2D(num_priors * num_classes, (3, 3), padding="same", name="conv6_2_mbox_conf")(net['conv6_2'])
     #x = Convolution2D(num_priors * num_classes, 3, 3, border_mode='same',
     #                  name=name)(net['conv6_2'])
     net['conv6_2_mbox_conf'] = x
@@ -244,10 +245,12 @@ def SSD300(input_shape, num_classes=21):
                         variances=[0.1, 0.1, 0.2, 0.2],
                         name='conv6_2_mbox_priorbox')
     net['conv6_2_mbox_priorbox'] = priorbox(net['conv6_2'])
+    
+    
     # Prediction from conv7_2
     num_priors = 6
 
-    x = Conv2D(24, (3, 3), padding="same", name="conv7_2_mbox_loc")(net['conv7_2'])
+    x = Conv2D(num_priors * 4, (3, 3), padding="same", name="conv7_2_mbox_loc")(net['conv7_2'])
     #x = Convolution2D(num_priors * 4, 3, 3, border_mode='same',
     #                  name='conv7_2_mbox_loc')(net['conv7_2'])
     net['conv7_2_mbox_loc'] = x
@@ -257,7 +260,7 @@ def SSD300(input_shape, num_classes=21):
     if num_classes != 21:
         name += '_{}'.format(num_classes)
     
-    x = Conv2D(126, (3, 3), padding="same", name="conv7_2_mbox_conf")(net['conv7_2'])
+    x = Conv2D(num_priors * num_classes, (3, 3), padding="same", name="conv7_2_mbox_conf")(net['conv7_2'])
     #x = Convolution2D(num_priors * num_classes, 3, 3, border_mode='same',
     #                  name=name)(net['conv7_2'])
     net['conv7_2_mbox_conf'] = x
@@ -267,9 +270,11 @@ def SSD300(input_shape, num_classes=21):
                         variances=[0.1, 0.1, 0.2, 0.2],
                         name='conv7_2_mbox_priorbox')
     net['conv7_2_mbox_priorbox'] = priorbox(net['conv7_2'])
+    
+    
     # Prediction from conv8_2
     num_priors = 6
-    x = Conv2D(24, (3, 3), padding="same", name="conv8_2_mbox_loc")(net['conv8_2'])
+    x = Conv2D(num_priors * 4, (3, 3), padding="same", name="conv8_2_mbox_loc")(net['conv8_2'])
     #x = Convolution2D(num_priors * 4, 3, 3, border_mode='same',
     #                  name='conv8_2_mbox_loc')(net['conv8_2'])
     net['conv8_2_mbox_loc'] = x
@@ -278,7 +283,7 @@ def SSD300(input_shape, num_classes=21):
     name = 'conv8_2_mbox_conf'
     if num_classes != 21:
         name += '_{}'.format(num_classes)
-    x = Conv2D(126, (3, 3), padding="same", name="conv8_2_mbox_conf")(net['conv8_2'])
+    x = Conv2D(num_priors * num_classes, (3, 3), padding="same", name="conv8_2_mbox_conf")(net['conv8_2'])
     #x = Convolution2D(num_priors * num_classes, 3, 3, border_mode='same',
     #                  name=name)(net['conv8_2'])
     net['conv8_2_mbox_conf'] = x
@@ -288,6 +293,8 @@ def SSD300(input_shape, num_classes=21):
                         variances=[0.1, 0.1, 0.2, 0.2],
                         name='conv8_2_mbox_priorbox')
     net['conv8_2_mbox_priorbox'] = priorbox(net['conv8_2'])
+    
+    
     # Prediction from pool6
     num_priors = 6
     x = Dense(num_priors * 4, name='pool6_mbox_loc_flat')(net['pool6'])
@@ -307,6 +314,8 @@ def SSD300(input_shape, num_classes=21):
     net['pool6_reshaped'] = Reshape(target_shape,
                                     name='pool6_reshaped')(net['pool6'])
     net['pool6_mbox_priorbox'] = priorbox(net['pool6_reshaped'])
+    
+    
     # Gather all predictions
     net['mbox_loc'] = Concatenate(axis=1, name='mbox_loc')([net['conv4_3_norm_mbox_loc_flat'],
                              net['fc7_mbox_loc_flat'],

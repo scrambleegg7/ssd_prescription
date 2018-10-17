@@ -85,9 +85,9 @@ class XML_preprocessor(object):
         one_hot_vector = [0] * self.num_classes
         if name == 'Prescription':
             one_hot_vector[0] = 1
-        elif name == 'Bill':
+        elif name == 'None':
             one_hot_vector[1] = 1
-        elif name == 'Note':
+        elif name == 'title':
             one_hot_vector[2] = 1
         elif name == 'Documents':
             one_hot_vector[3] = 1
@@ -132,8 +132,8 @@ class XML_preprocessor(object):
 
 ## example on how to use it
 import pickle
-data = XML_preprocessor('../VOCdevkit/080109_output/Annotations/').data
+data = XML_preprocessor('../VOCdevkit/Prescription/Annotations/').data
 #data = XML_preprocessor('../VOCdevkit/VOC2007/Annotations/').data
-pickle.dump(data,open('080109_output.pkl','wb'))
+pickle.dump(data,open('prescription.pkl','wb'))
 
 

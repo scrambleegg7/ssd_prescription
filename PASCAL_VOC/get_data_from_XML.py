@@ -41,7 +41,7 @@ class XML_preprocessor(object):
         one_hot_vector = [0] * self.num_classes
         if name == 'Prescription':
             one_hot_vector[0] = 1
-        elif name == 'bicycle':
+        elif name == 'None':
             one_hot_vector[1] = 1
         elif name == 'bird':
             one_hot_vector[2] = 1

@@ -46,7 +46,9 @@ class SSDPipeline(object):
 
         input_shape=(300, 300, 3)
         self.model = SSD300(input_shape, num_classes=NUM_CLASSES)
-        weights_file = "./checkpoints/weights.09-1.09.hdf5"        
+        weights_file = "./checkpoints/weights.10-2.85.hdf5"        
+        #weights_file = "./checkpoints/weights.39-1.61_ubuntu.hdf5"
+
         self.model.load_weights(weights_file, by_name=True)
         self.bbox_util = BBoxUtility(NUM_CLASSES)
 
@@ -65,7 +67,7 @@ class SSDPipeline(object):
     def setClassColors(self):
 
         self.class_colors = []
-        self.class_names = ["background", "Prescription", "None", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"];
+        self.class_names = ["background", "Prescription", "None", "title", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"];
         NUM_CLASSES = len(self.class_names)
 
         for i in range(0, NUM_CLASSES):

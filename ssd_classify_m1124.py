@@ -32,7 +32,7 @@ def videopipeline():
     ssdp = SSDPipeline()
     ssdp.setClassColors()
 
-    parentDir = "./results"
+    parentDir = "/Volumes/ssd/FTP/"
 
     prv_frame = None
     while(True):
@@ -66,11 +66,18 @@ def videopipeline():
                     pass
 
                 _num = cv2.countNonZero(thresh)
-                if _num > 10000:
+                if _num > 6000:
                     logging.info("frame diffs happened bigger than threshhold --> %d" % _num )
                     logging.info("Name %s" % (classes,) )
                     logging.info("Probability %s" % (probs,)   )
-                    cv2.imwrite(  os.path.join( subdir, 'prescription-%s.jpg' % timestr )    , frame )
+
+                    classes = np.array(classes)
+                    probs = np.array(probs)
+                    prescri_probs = probs[classes == "Prescription"]
+                    over80_probs = prescri_probs[ prescri_probs > 0.60 ]
+                    if len(over80_probs) > 0:
+                        logging.info("writing prescription image on disk."   )
+                        cv2.imwrite(  os.path.join( subdir, 'prescription-%s.jpg' % timestr )    , frame )
                 
         prv_frame = gray
 
