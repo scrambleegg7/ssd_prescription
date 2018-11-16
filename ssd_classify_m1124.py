@@ -21,7 +21,7 @@ def videopipeline():
     # AXIS M1124 Video streaming
 
     cam = cv2.VideoCapture()
-    cam.open("http://192.168.1.151/axis-cgi/mjpg/video.cgi?fps=4")
+    cam.open("http://192.168.1.151/axis-cgi/mjpg/video.cgi?fps=6")
 
     if cam.isOpened():
         print("Camera connection established.")
